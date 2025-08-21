@@ -19,6 +19,7 @@ class TaskWidgetProvider : AppWidgetProvider() {
 
     companion object {
         private const val PREFS = "todo_prefs"
+        private const val KEY_ALL = "all"
         private const val KEY_DONE = "done"
         private const val KEY_UNDONE = "undone"
 
@@ -32,10 +33,12 @@ class TaskWidgetProvider : AppWidgetProvider() {
         private fun updateSingle(context: Context, mgr: AppWidgetManager, appWidgetId: Int) {
             try {
                 val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                val all = prefs.getInt(KEY_ALL, 0)
                 val done = prefs.getInt(KEY_DONE, 0)
                 val undone = prefs.getInt(KEY_UNDONE, 0)
 
                 val views = RemoteViews(context.packageName, R.layout.task_widget)
+                views.setTextViewText(R.id.txt_all, all.toString())
                 views.setTextViewText(R.id.txt_done, done.toString())
                 views.setTextViewText(R.id.txt_undone, undone.toString())
 

@@ -5,6 +5,7 @@ import '../../../domain/usecases/add_task_usecase.dart';
 import '../../../domain/usecases/delete_task_usecase.dart';
 import '../../../domain/usecases/get_task_usecase.dart';
 import '../../../domain/usecases/toggle_task_usecase.dart';
+import '../../../domain/usecases/update_task_usecase.dart';
 import 'task_event.dart';
 import 'task_state.dart';
 
@@ -13,17 +14,25 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final AddTask _addTask;
   final ToggleTask _toggleTask;
   final DeleteTask _deleteTask;
+  final UpdateTask _updateTask;
 
-  TaskBloc({required GetTasks getTasks, required AddTask addTask, required ToggleTask toggleTask, required DeleteTask deleteTask})
-    : _getTasks = getTasks,
-      _addTask = addTask,
-      _toggleTask = toggleTask,
-      _deleteTask = deleteTask,
-      super(TaskState.initial()) {
+  TaskBloc({
+    required GetTasks getTasks,
+    required AddTask addTask,
+    required ToggleTask toggleTask,
+    required DeleteTask deleteTask,
+    required UpdateTask updateTask,
+  })  : _getTasks = getTasks,
+        _addTask = addTask,
+        _toggleTask = toggleTask,
+        _deleteTask = deleteTask,
+        _updateTask = updateTask,
+        super(TaskState.initial()) {
     on<LoadTasks>(_onLoadTasks);
     on<AddTaskEvent>(_onAddTask);
     on<ToggleTaskEvent>(_onToggleTask);
     on<DeleteTaskEvent>(_onDeleteTask);
+    on<UpdateTaskEvent>(_onUpdateTask);
   }
 
   /// Helpers
@@ -44,7 +53,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _onAddTask(AddTaskEvent event, Emitter<TaskState> emit) async {
     // optional: optimistic UI uchun statusni loadingga olamiz
     emit(state.copyWith(status: TaskStatus.loading, errorMessage: null));
-    final either = await _addTask(AddTaskParams(event.title));
+    final either = await _addTask(AddTaskParams(event.title, event.description));
     await either.fold(
       (err) async => emit(state.copyWith(status: TaskStatus.failure, errorMessage: err.message)),
       (_) async => _reload(emit),
@@ -62,6 +71,15 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<void> _onDeleteTask(DeleteTaskEvent event, Emitter<TaskState> emit) async {
     final either = await _deleteTask(DeleteTaskParams(event.id));
+    await either.fold(
+      (err) async => emit(state.copyWith(status: TaskStatus.failure, errorMessage: err.message)),
+      (_) async => _reload(emit),
+    );
+  }
+
+  Future<void> _onUpdateTask(UpdateTaskEvent event, Emitter<TaskState> emit) async {
+    emit(state.copyWith(status: TaskStatus.loading, errorMessage: null));
+    final either = await _updateTask(event.task);
     await either.fold(
       (err) async => emit(state.copyWith(status: TaskStatus.failure, errorMessage: err.message)),
       (_) async => _reload(emit),

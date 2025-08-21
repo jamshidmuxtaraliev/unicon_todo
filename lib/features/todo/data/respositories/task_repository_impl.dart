@@ -7,6 +7,7 @@ import '../datasource/task_local_datasource.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskLocalDataSource local;
+
   TaskRepositoryImpl({required this.local});
 
   @override
@@ -20,9 +21,9 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<ErrorModel, int>> addTask(String title) async {
+  Future<Either<ErrorModel, int>> addTask(String title, String description) async {
     try {
-      final id = await local.addTask(title);
+      final id = await local.addTask(title, description);
       return Right(id);
     } catch (e) {
       return Left(ErrorModel(message: e.toString()));
@@ -43,6 +44,16 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<ErrorModel, void>> deleteTask(int id) async {
     try {
       await local.deleteTask(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(ErrorModel(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ErrorModel, void>> updateTask(TaskEntity task) async {
+    try {
+      await local.updateTask(task);
       return const Right(null);
     } catch (e) {
       return Left(ErrorModel(message: e.toString()));

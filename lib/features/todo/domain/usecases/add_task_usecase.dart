@@ -6,8 +6,9 @@ import '../respositories/task_repository.dart';
 
 class AddTaskParams {
   final String title;
+  final String description;
 
-  AddTaskParams(this.title);
+  AddTaskParams(this.title, this.description);
 }
 
 class AddTask implements UseCase<int, AddTaskParams> {
@@ -17,6 +18,6 @@ class AddTask implements UseCase<int, AddTaskParams> {
 
   @override
   Future<Either<ErrorModel, int>> call(AddTaskParams params) {
-    return repo.addTask(params.title);
+    return repo.addTask(params.title, params.description);
   }
 }

@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../domain/entities/task.dart';
+
 abstract class TaskEvent extends Equatable {
   const TaskEvent();
 
@@ -15,11 +17,12 @@ class LoadTasks extends TaskEvent {
 /// Yangi vazifa qo'shish
 class AddTaskEvent extends TaskEvent {
   final String title;
+  final String description;
 
-  const AddTaskEvent(this.title);
+  const AddTaskEvent(this.title, this.description);
 
   @override
-  List<Object?> get props => [title];
+  List<Object?> get props => [title, description];
 }
 
 /// Vazifa holatini almashtirish
@@ -41,4 +44,13 @@ class DeleteTaskEvent extends TaskEvent {
 
   @override
   List<Object?> get props => [id];
+}
+
+/// Vazifani tahrirlash
+class UpdateTaskEvent extends TaskEvent {
+  final TaskEntity task;
+  const UpdateTaskEvent(this.task);
+
+  @override
+  List<Object?> get props => [task];
 }
