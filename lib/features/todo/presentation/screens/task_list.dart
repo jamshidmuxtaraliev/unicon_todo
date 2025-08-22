@@ -9,6 +9,7 @@ import '../../../../core/services/local_notification_service.dart';
 import '../../domain/entities/task.dart';
 import '../logic/task_bloc/task_bloc.dart';
 import '../logic/task_bloc/task_event.dart';
+import '../widgets/custom_dialog.dart';
 import '../widgets/task_item_widget.dart';
 
 class TaskList extends StatelessWidget {
@@ -39,26 +40,45 @@ class TaskList extends StatelessWidget {
           final task = items[index];
           return TaskItemCard(
             task: task,
-            onToggleCompleted: (bool value) {
-              context.read<TaskBloc>().add(ToggleTaskEvent(task.id!, !task.done));
-              //done false bolganda demak rue qilish uchun bosgan
+            onToggleCompleted: (bool value) async {
+              //done false bolganda demak true qilish uchun bosgan
               if (task.done == false) {
-                AwesomeNotifications().createNotification(
-                  content: NotificationContent(
-                    id: Random().nextInt(100000),
-                    channelKey: 'todo_channel',
-                    title: '✅ Vazifa bajarildi',
-                    body: 'Task bajarildi va yangilandi',
-                  ),
+                showTaskActionDialog(
+                  context,
+                  mode: TaskActionMode.done,
+                  title: 'Vazifa bajarildi deb belgilansinmi?',
+                  message: 'Bu vazifa “Bajarilgan” bo‘limiga o‘tadi.',
+                  onConfirm: () async {
+                    context.read<TaskBloc>().add(ToggleTaskEvent(task.id!, !task.done));
+                    AwesomeNotifications().createNotification(
+                      content: NotificationContent(
+                        id: Random().nextInt(100000),
+                        channelKey: 'todo_channel',
+                        title: '✅ Vazifa bajarildi',
+                        body: 'Task bajarildi va yangilandi',
+                      ),
+                    );
+                  },
                 );
+              } else {
+                context.read<TaskBloc>().add(ToggleTaskEvent(task.id!, !task.done));
               }
-              ;
             },
+            onDelete: () async {
+              showTaskActionDialog(
+                context,
+                mode: TaskActionMode.delete,
+                title: 'Vazifani o‘chirmoqchimisiz?',
+                message: 'Bu amalni ortga qaytarib bo‘lmaydi.',
+                confirmText: 'O‘chirish',
+                onConfirm: () async {
+                  context.read<TaskBloc>().add(DeleteTaskEvent(task.id!));
+                },
+              );
+            },
+
             onEdit: () {
               showTaskDialog(context, task: task);
-            },
-            onDelete: () {
-              context.read<TaskBloc>().add(DeleteTaskEvent(task.id!));
             },
           );
         },

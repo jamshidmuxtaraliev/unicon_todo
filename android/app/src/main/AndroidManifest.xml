@@ -4,13 +4,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="unicon_todo">
+        android:label="Unicon Todo">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -45,6 +46,34 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/task_widget_info" />
         </receiver>
+        <service
+            android:name=".PersistentService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        <receiver
+            android:name=".DBCheckReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.unicon_todo.ACTION_DB_CHECK"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".MarkDoneReceiver"
+            android:exported="true"
+            android:permission="TODO">
+            <intent-filter>
+                <action android:name="com.example.unicon_todo.ACTION_MARK_DONE"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />

@@ -4,6 +4,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicon_todo/features/todo/domain/usecases/update_task_usecase.dart';
+import 'package:unicon_todo/features/todo/presentation/screens/splash_screen.dart';
 import 'package:unicon_todo/platform/widget_bridge.dart';
 
 import 'core/services/bacground_reminder_service.dart';
@@ -33,8 +34,14 @@ Future<void> main() async {
   await initDI();
   await Permission.notification.request();
   await LocalNotificationService.init();
-  await TaskBackgroundService.configureAndStart();
-  setupBgListenersInUI();
+
+  //TODO:
+  // BG servis ham native da yozildi.
+  // Flutterdagi servis ham yaxshi ishladi ammo Notif ni ustiga bosib done qilsa home widgetga aloqa uzatib bolmadi
+  //sababi kill holatda metodchanel ham ishlamas ekan. shuning uchun native da yozildi.
+
+  // await TaskBackgroundService.configureAndStart();
+  // setupBgListenersInUI();
 
   runApp(const MyApp());
 }
@@ -61,7 +68,7 @@ class MyApp extends StatelessWidget {
         title: 'Todo App (Clean Architecture)',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light, // AppBar GREEN, TabBar selected GREEN, Scaffold oq
-        home: const MainScreen(),
+        home: const SplashPage(),
       ),
     );
   }

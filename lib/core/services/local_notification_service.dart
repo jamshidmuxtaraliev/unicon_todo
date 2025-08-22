@@ -1,75 +1,3 @@
-//
-//
-// import 'dart:math';
-// import 'package:awesome_notifications/awesome_notifications.dart';
-// import 'package:unicon_todo/features/todo/data/datasource/task_local_datasource.dart';
-// import '../../platform/widget_bridge.dart';
-//
-// class LocalNotificationService {
-//   static Future<void> init() async {
-//     await AwesomeNotifications().initialize(
-//       null,
-//       [
-//         NotificationChannel(
-//           channelKey: 'todo_channel',
-//           channelName: 'Todo Notifications',
-//           channelDescription: 'Eslatmalar',
-//           importance: NotificationImportance.High,
-//         )
-//       ],
-//     );
-//
-//     // Action listener
-//     AwesomeNotifications().setListeners(
-//       onActionReceivedMethod: onActionReceived,
-//     );
-//   }
-//
-//   static Future<void> showTaskNotification({required int taskId, required String title}) async {
-//     await AwesomeNotifications().createNotification(
-//       content: NotificationContent(
-//         id: Random().nextInt(100000),
-//         channelKey: 'todo_channel',
-//         title: 'Bajarildimi?',
-//         body: title,
-//         payload: {'taskId': '$taskId'},
-//       ),
-//       actionButtons: [
-//         NotificationActionButton(key: 'DONE', label: 'O‘qilgan deb belgilash'),
-//       ],
-//     );
-//   }
-//
-//   // 🔑 Tugma bosilganda shu ishlaydi
-//   static Future<void> onActionReceived(ReceivedAction action) async {
-//     if (action.buttonKeyPressed == 'DONE' && action.payload?['taskId'] != null) {
-//       final id = int.tryParse(action.payload!['taskId'] ?? '');
-//       if (id == null) return;
-//
-//       final ds = TaskLocalDataSourceImpl();
-//       await ds.toggleTask(id, true);
-//
-//       // Widget sonlarini yangilash
-//       final items = await ds.getTasks();
-//       final all = items.length;
-//       final done = items.where((e) => e.done == true).length;
-//       final undone = all - done;
-//
-//       await WidgetBridge.updateWidgetCounts(all: all, done: done, undone: undone);
-//
-//       // "Bajarildi" notif
-//       await AwesomeNotifications().createNotification(
-//         content: NotificationContent(
-//           id: Random().nextInt(100000),
-//           channelKey: 'todo_channel',
-//           title: '✅ Vazifa bajarildi',
-//           body: 'Task bajarildi va yangilandi',
-//         ),
-//       );
-//     }
-//   }
-// }
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
@@ -139,11 +67,11 @@ Future<void> awesomeNotificationsActionHandler(ReceivedAction action) async {
   final undone = all - done;
 
   // 1) Bevosita yangilashga urinish
-  try {
-    await WidgetBridge.updateWidgetCounts(all: all, done: done, undone: undone);
-  } catch (_) {
-    // 2) Agar background izolatda bo‘lsa — service orqali UI izolatga signal yuboramiz
-  }
+  // try {
+  //   await WidgetBridge.updateWidgetCounts(all: all, done: done, undone: undone);
+  // } catch (_) {
+  //   // 2) Agar background izolatda bo‘lsa — service orqali UI izolatga signal yuboramiz
+  // }
 
   // ✅ Har holda signal yuborib qo‘yamiz (kafolat uchun)
   try {

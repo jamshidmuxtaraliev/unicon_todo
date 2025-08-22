@@ -1,7 +1,7 @@
-// lib/features/todo/presentation/pages/main_screen.dart
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicon_todo/features/todo/presentation/screens/task_list.dart';
 import 'package:unicon_todo/features/todo/presentation/widgets/task_item_widget.dart';
@@ -9,7 +9,6 @@ import 'package:unicon_todo/features/todo/presentation/widgets/task_item_widget.
 import '../../../../core/services/bacground_reminder_service.dart';
 import '../../../todo/domain/entities/task.dart';
 
-// WidgetBridge orqali Android Home Widget’ni yangilaymiz
 import '../../../../platform/widget_bridge.dart';
 import '../logic/task_bloc/task_bloc.dart';
 import '../logic/task_bloc/task_event.dart';
@@ -23,11 +22,24 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  static const _events = MethodChannel('todo/events');
+
   @override
   void initState() {
     super.initState();
     context.read<TaskBloc>().add(const LoadTasks());
+
+    _events.setMethodCallHandler((call) async {
+      if (call.method == 'taskChanged') {
+        // id/done ni istasangiz o'qing:
+        // final id = (call.arguments as Map)['id'] as int?;
+        // final done = (call.arguments as Map)['done'] as bool?;
+        // Eng soddasi: ro'yxatni qayta yuklang
+        context.read<TaskBloc>().add(const LoadTasks());
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,17 +136,14 @@ Future<void> showTaskDialog(BuildContext context, {TaskEntity? task}) async {
     barrierDismissible: true,
     barrierLabel: 'Yangi vazifa',
     barrierColor: Colors.black.withOpacity(0.25),
-    // biroz qoraytirish
     transitionDuration: const Duration(milliseconds: 220),
     pageBuilder: (_, __, ___) {
-      // Asl sahifa — blur fon
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
         child: const SizedBox.expand(), // shunchaki fonni tutib turish
       );
     },
     transitionBuilder: (ctx, anim, __, ___) {
-      // Karta animatsiyasi: opacity + scale
       final opacity = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
       final scale = Tween<double>(begin: 0.95, end: 1).animate(CurvedAnimation(parent: anim, curve: Curves.easeOutBack));
 
