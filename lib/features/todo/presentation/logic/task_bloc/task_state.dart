@@ -1,19 +1,18 @@
 import 'package:equatable/equatable.dart';
+import 'package:formz/formz.dart';
 import 'package:unicon_todo/features/todo/domain/entities/task.dart';
 
-enum TaskStatus { initial, loading, success, failure }
-
 class TaskState extends Equatable {
-  final TaskStatus status;
+  final FormzSubmissionStatus status;
   final List<TaskEntity> items;
   final String? errorMessage;
 
   const TaskState({required this.status, required this.items, this.errorMessage});
 
-  factory TaskState.initial() => const TaskState(status: TaskStatus.initial, items: []);
+  factory TaskState.initial() => const TaskState(status: FormzSubmissionStatus.initial, items: []);
 
   TaskState copyWith({
-    TaskStatus? status,
+    FormzSubmissionStatus? status,
     List<TaskEntity>? items,
     String? errorMessage, // null kelsa ham override bo'lsin desangiz explicit yuboring
   }) {

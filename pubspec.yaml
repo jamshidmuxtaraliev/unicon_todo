@@ -38,6 +38,7 @@ dependencies:
   awesome_notifications:
   json_annotation:
   dartz:
+  formz:
   bloc:
   flutter_bloc:
   equatable:
