@@ -15,6 +15,7 @@ import '../logic/task_bloc/task_bloc.dart';
 import '../logic/task_bloc/task_event.dart';
 import '../logic/task_bloc/task_state.dart';
 import '../widgets/add_and_edit_dialog.dart';
+import '../widgets/exact_alarm_permisson_widget.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -29,6 +30,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ExactAlarmBottomSheet.checkAndShow(context);
+    });
+
     context.read<TaskBloc>().add(const LoadTasks());
 
     _events.setMethodCallHandler((call) async {

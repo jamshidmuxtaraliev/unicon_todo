@@ -44,6 +44,7 @@ dependencies:
   equatable:
   mockito:
   cherry_toast:
+  device_info_plus: ^11.5.0
   permission_handler:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

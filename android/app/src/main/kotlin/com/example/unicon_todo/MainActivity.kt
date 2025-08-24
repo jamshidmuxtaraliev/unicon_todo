@@ -30,16 +30,17 @@ class MainActivity : FlutterActivity() {
     private val EVENTS_CHANNEL = "todo/events"
     private var eventsChannel: MethodChannel? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val am = getSystemService(AlarmManager::class.java)
-            if (!am.canScheduleExactAlarms()) {
-                // Foydalanuvchi uchun “Alarms & reminders” oynasini ochamiz
-                startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            val am = getSystemService(AlarmManager::class.java)
+//            if (!am.canScheduleExactAlarms()) {
+//                // Foydalanuvchi uchun “Alarms & reminders” oynasini ochamiz
+//                startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+//            }
+//        }
 
         // Ilk ishga tushirish: DB tekshiruvini darhol yoqib yuboramiz
         sendBroadcast(Intent(ACTION_DB_CHECK).apply {
@@ -52,7 +53,15 @@ class MainActivity : FlutterActivity() {
             Intent(this, PersistentService::class.java)
         )
 
-        registerReceiver(taskChangedReceiver, IntentFilter(ACTION_TASK_CHANGED))
+        val filter = IntentFilter(ACTION_TASK_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(taskChangedReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(taskChangedReceiver, filter, RECEIVER_NOT_EXPORTED)
+        }
+
+
     }
 
 
